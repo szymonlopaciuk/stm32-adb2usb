@@ -19,6 +19,7 @@ Some other resources that were useful to me as well:
 ## TODO
 
 - [x] Make the keyboard work
+- [ ] Fix timers, using `micros()` for time differences will cause problems
 - [ ] Make the mouse work
 - [ ] Ditch bitfields as the ordering of bytes/bits is confusing and not super portable (see tests failing; passing around uint16_t and then casting to bitfield structs is really dodgy and I shouldn't be doing that)
 - [ ] Handle SRQs and multiple devices of the same type properly

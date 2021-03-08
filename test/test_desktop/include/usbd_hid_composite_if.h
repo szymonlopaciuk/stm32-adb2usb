@@ -1,6 +1,6 @@
 typedef enum {
-  HID_KEYBOARD,
-  HID_MOUSE
+    HID_KEYBOARD,
+    HID_MOUSE
 } HID_Interface;
 
 void HID_Composite_Init(HID_Interface device) {

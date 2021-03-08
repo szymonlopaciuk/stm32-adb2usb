@@ -7,8 +7,8 @@
 #define KEY_REPORT_KEYS_COUNT 6
 
 struct hid_key_report {
-  uint8_t modifiers;
-  uint8_t keys[KEY_REPORT_KEYS_COUNT];
+    uint8_t modifiers;
+    uint8_t keys[KEY_REPORT_KEYS_COUNT];
 };
 
 void hid_keyboard_init();

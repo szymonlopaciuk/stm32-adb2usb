@@ -14,8 +14,8 @@ struct hid_key_report {
 void hid_keyboard_init();
 void hid_keyboard_close();
 void hid_keyboard_send_report(hid_key_report* report);
-bool hid_keyboard_set_keys_from_adb_register(hid_key_report* report, adb_kb_data<adb_kb_keypress> reg);
-bool hid_keyboard_set_modifiers_from_adb_register(hid_key_report* report, adb_kb_data<adb_kb_keypress> reg);
+bool hid_keyboard_set_keys_from_adb_register(hid_key_report* report, adb_data<adb_kb_keypress> reg);
+bool hid_keyboard_set_modifiers_from_adb_register(hid_key_report* report, adb_data<adb_kb_keypress> reg);
 bool hid_keyboard_update_key_in_report(hid_key_report* report, uint8_t hid_keycode, bool released);
 bool hid_keyboard_update_modifier_in_report(hid_key_report* report, uint8_t adb_keycode, bool released);
 bool hid_keyboard_add_key_to_report(hid_key_report* report, uint8_t hid_keycode);

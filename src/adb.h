@@ -15,6 +15,9 @@
 #define ADB_CMD_LISTEN      (0b10 << 2)
 #define ADB_CMD_FLUSH       (0b01 << 2)
 
+#define ADB_ADDR_KEYBOARD   2
+#define ADB_ADDR_MOUSE      3
+
 #define ADB_BIT_ERROR       0xFF
 
 // Reset: signal low for 3 ms.

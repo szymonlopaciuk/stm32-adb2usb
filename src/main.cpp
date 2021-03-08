@@ -5,11 +5,14 @@
 #include "hid_tables.h"
 #include "adb_structures.h"
 #include "hid_keyboard.h"
+#include "hid_mouse.h"
 #include "adb_devices.h"
+#include "Mouse.h"
 
 #define POLL_DELAY      5
 
 bool apple_extended_detected = false;
+bool keyboard_present = false, mouse_present = false;
 
 #ifdef PIO_FRAMEWORK_ARDUINO_ENABLE_CDC
 void print16b(uint16_t buff) {
@@ -55,17 +58,27 @@ void setup() {
   // Initialise the ADB devices
   // Switch the keyboard to Apple Extended if available
   bool error = false;
-  adb_kb_data<adb_register3> reg3 = {0}, mask = {0};
+  adb_data<adb_register3> reg3 = {0}, mask = {0};
   reg3.data.device_handler_id = 0x03;
   mask.data.device_handler_id = 0xFF;
-  apple_extended_detected = adb_keyboard_update_register3(reg3, mask.raw, &error);
+  apple_extended_detected = adb_device_update_register3(ADB_ADDR_KEYBOARD, reg3, mask.raw, &error);
+  if (!error) keyboard_present = true,
+
+  // Switch the mouse to higher resolution, if available
+  // TODO: Apple Extended Mouse Protocol (Handler = 4)
+  error = false;
+  reg3.raw = 0;
+  mask.raw = 0;
+  reg3.data.device_handler_id = 0x02;
+  mask.data.device_handler_id = 0xFF;
+  adb_device_update_register3(ADB_ADDR_MOUSE, reg3, mask.raw, &error);
+  if (!error) mouse_present = true;
 
   // Set-up successful, turn of the LED
   digitalWrite(PC13, HIGH);
 }
 
-void loop() {
-  // TODO: Add proper polling based on SRQ
+void keyboard_handler() {
   static bool led_caps = false;
   static hid_key_report key_report = {0};
   bool error = false;
@@ -109,13 +122,35 @@ void loop() {
   }
   
   // Send the finished report
-  if (report_changed)
+  //if (report_changed)
       hid_keyboard_send_report(&key_report);
+}
 
-  // Wait a tiny bit before polling again,
-  // while ADB seems fairly tolarent of quick requests
-  // we don't want to overwhelm USB either
-  delay(POLL_DELAY);
+void mouse_handler() {
+  bool error = false;
+  auto mouse_data = adb_mouse_read_data(&error);
+
+  if (error || mouse_data.raw == 0) return;
+
+  int8_t mouse_x = ADB_MOUSE_CONV_AXIS(mouse_data.data.x_offset);
+  int8_t mouse_y = ADB_MOUSE_CONV_AXIS(mouse_data.data.y_offset);
+  
+  hid_mouse_send_report(mouse_data.data.button ? 0 : 1, mouse_x, mouse_y);
+}
+
+void loop() {
+  if (keyboard_present) {
+    keyboard_handler();
+    // Wait a tiny bit before polling again,
+    // while ADB seems fairly tolerent of quick requests
+    // we don't want to overwhelm USB either
+    delay(POLL_DELAY);
+  }
+
+  if (mouse_present) {
+    mouse_handler();
+    delay(POLL_DELAY);
+  }
 }
 
 #endif

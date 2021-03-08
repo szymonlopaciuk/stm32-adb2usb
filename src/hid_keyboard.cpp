@@ -5,12 +5,16 @@
 
 void hid_keyboard_init()
 {
+#ifdef PIO_FRAMEWORK_ARDUINO_ENABLE_HID
     HID_Composite_Init(HID_KEYBOARD);
+#endif
 }
 
 void hid_keyboard_close()
 {
+#ifdef PIO_FRAMEWORK_ARDUINO_ENABLE_HID
     HID_Composite_DeInit(HID_KEYBOARD);
+#endif
 }
 
 void hid_keyboard_send_report(hid_key_report* report)
@@ -19,11 +23,13 @@ void hid_keyboard_send_report(hid_key_report* report)
         report->keys[1], report->keys[2], report->keys[3], report->keys[4],
         report->keys[5]
     };
+#ifdef PIO_FRAMEWORK_ARDUINO_ENABLE_HID
     HID_Composite_keyboard_sendReport(buf, 8);
+#endif
 }
 
 bool hid_keyboard_set_keys_from_adb_register(
-        hid_key_report* report, adb_kb_data<adb_kb_keypress> key_press) {
+        hid_key_report* report, adb_data<adb_kb_keypress> key_press) {
     // Power button is a special case, residing in both octets:
     if (key_press.raw == ADB_KEY_POWER_DOWN)
         return hid_keyboard_update_key_in_report(report, KEY_POWER, false);
@@ -54,7 +60,7 @@ bool hid_keyboard_set_keys_from_adb_register(
 }
 
 bool hid_keyboard_set_modifiers_from_adb_register(
-        hid_key_report* report, adb_kb_data<adb_kb_keypress> reg) {
+        hid_key_report* report, adb_data<adb_kb_keypress> reg) {
     // TODO: don't seem necessary, as modifiers still register normal keypresses
     return false;
 }
@@ -125,5 +131,3 @@ bool hid_keyboard_remove_key_from_report(hid_key_report* report, uint8_t hid_key
     }
     return report_changed;
 }
-
-//#endif

@@ -18,6 +18,9 @@
 #define ADB_KEY_RIGHT_COMMAND   0x37
 #define ADB_KEY_CAPS_LOCK       0x39
 
+// Convert axis from 7b 2's complement to int8_t
+#define ADB_MOUSE_CONV_AXIS(x)  (int8_t)(x << 1)
+
 struct adb_kb_keypress {
     uint8_t key1 : 7;
     bool released1 : 1;
@@ -30,7 +33,7 @@ struct adb_kb_modifiers {
     bool led_num : 1;       // 0, ditto
     bool led_caps : 1;      // 1, ditto
     bool led_scroll : 1;    // 2, changeable with `listen' command
-    uint8_t reserved1 : 3;  // 5–3
+    uint8_t reserved1 : 3;  // 5 – 3
     bool scroll_lock : 1;   // 6
     bool num_lock : 1;      // 7
     // Apple Standard Keyboard:
@@ -44,6 +47,13 @@ struct adb_kb_modifiers {
     uint8_t reserved0 : 1;  // 15
 };
 
+struct adb_mouse_data {
+    uint8_t x_offset : 7;   // 6 - 0
+    uint8_t reserved0 : 1;  // 7
+    uint8_t y_offset : 7;   // 14 - 8
+    bool button : 1;        // 15
+};
+
 // Contains device info and params
 struct adb_register3 {
     uint8_t device_handler_id : 8;
@@ -55,7 +65,7 @@ struct adb_register3 {
 };
 
 template <typename T>
-union adb_kb_data {
+union adb_data {
     uint16_t raw;
     T data;
 };

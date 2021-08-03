@@ -16,6 +16,8 @@ Some other resources that were useful to me as well:
 - Inside Macintosh volume V, pages 191-192, for keycodes
 - [This blog post](https://www.bigmessowires.com/2016/03/30/understanding-the-adb-service-request-signal/) which explains `Srq` and `Tlt`
 
+If you are interested in the nitty-gritty of the ADB protocol, I wrote [this post](https://www.lopaciuk.eu/2021/03/26/apple-adb-protocol.html), which summarises all my findings, to accompany this repo.
+
 ## TODO
 
 - [x] Make the keyboard work
